@@ -42,6 +42,7 @@ implementations.py: 6 functions describing different regression methods for data
 
 project1.ipynb: python notebook used to test our implementations for this project
 
+In the report folder, you will find our report written edited with LaTeX.
 
 
 
