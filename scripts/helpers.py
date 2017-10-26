@@ -41,6 +41,22 @@ def build_model_data(height, weight):
     tx = np.c_[np.ones(num_samples), x]
     return y, tx
 
+def build_model(x):
+    x, mean_x, std_x=standardize(x)
+    
+    n = int((x.shape[1]+2)*(x.shape[1]+1)/2)
+    phi = np.zeros((x.shape[0],n))
+    for j in range(x.shape[0]):
+        features = np.concatenate(([1],x[j,:]))
+        m = len(features)
+        matrix = np.outer(features, features)
+        np.tril(np.outer(features, features)).reshape(-1)
+        iu1 = np.triu_indices(m)
+        phi[j,:] = matrix[iu1]
+        
+    # x, mean_x, std_x=standardize(phi)
+        
+    return phi    
 
 
 """Helpers for Gradient Descent"""
