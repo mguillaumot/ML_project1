@@ -7,8 +7,8 @@ from costs import *
 """Helpers for data pre-processing"""
 
 
-def standardize(x):
-    """Standardize the original data set."""
+def standardize(x, jet = 0):
+    """Standardize the original data set."""   
     mean_x = np.mean(x, axis=0)
     x = x - mean_x
     std_x = np.std(x, axis=0)
@@ -216,17 +216,6 @@ def divide_subset(data, y = None):
     
     return [[x_no_jet, y_no_jet], [x_one_jet, y_one_jet], [x_more_jet, y_more_jet]]
 
-
-def remove_NaN_columns(data):
-    """Remove columns full of NaN"""
-    # Get indices of column full of NaN
-    ind_col_nan = np.where(~np.isnan(data).all(axis=0))
-    
-    # Keep only others columns
-    data = data[:,ind_col_nan[0]]
-    
-    return data
-
 def replace_NaN_by_mean(data):
     """Replace persistent NaN by mean of the feature"""
     # If NaN value, it is replace by the mean of the feature 
@@ -247,7 +236,7 @@ def replace_NaN_by_mean(data):
         # Replace NaN value of the row by the mean value
         for i in range(len(ind_row_nan)):
             data[ind_row_nan[i],col] = mean_no_nan
-        
+    
     return data
 
 def replace_NaN_by_mean_test(data_test, data_train):
@@ -265,15 +254,6 @@ def replace_NaN_by_mean_test(data_test, data_train):
         
     return data_test
 
-def standardize(x):
-    """Standardize the original data set."""
-    mean_x = np.mean(x, axis = 0)
-    x = x - mean_x
-    std_x = np.std(x, axis = 0)
-    x = x / std_x
-    
-    return x, mean_x, std_x
-
 def normalize_features(data):
     """ Normalization of each feature between -1 and 1"""
     for ind_feature in range (0, data.shape[1]):
@@ -289,20 +269,16 @@ def normalize_features(data):
 
 def preprocess_data_train(data_train, jet = 0):
     # Remove unused columns, full of NaN
-    data_train = remove_NaN_columns(data_train)
-    
-    # Remove features PRI_jet_num & PRI_jet_all_pt
-    if (jet == 0 or jet == 1):
-        data_train = np.delete(data_train, -1, axis = 1)
-        data_train = np.delete(data_train, -1, axis = 1)
-        
-    # TODO : 1 more row to manage for jet = 1
+    if jet == 0:
+        data_train = np.delete(data_train,[4,5,6,12,22,23,24,25,26,27,28,29],1)
+    elif  jet == 1:
+        data_train = np.delete(data_train,[4,5,6,12,22,26,27,28,29],1)
     
     # Replace NaN by mean of the feature
     data_train = replace_NaN_by_mean(data_train)
-    
+
     # Standardize
-    data_train, mean_data, std_data = standardize(data_train)
+    data_train, mean_data, std_data = standardize(data_train, jet = jet)
         
     # Normalize in [-1,1]
 #     data_train = normalize_features(data_train)
@@ -311,14 +287,10 @@ def preprocess_data_train(data_train, jet = 0):
 
 def preprocess_data_test(data_test, data_train, jet = 0):
     # Remove unused columns, full of NaN
-    data_test = remove_NaN_columns(data_test)
-    
-    # Remove features PRI_jet_num & PRI_jet_all_pt
-    if (jet == 0 or jet == 1):
-        data_test = np.delete(data_test, -1, axis = 1)
-        data_test = np.delete(data_test, -1, axis = 1)
-        
-    # TODO : 1 more row to manage for jet = 1
+    if jet == 0:
+        data_test = np.delete(data_test,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+    elif  jet == 1:
+        data_test = np.delete(data_test,[4,5,6,12,22,26,27,28,29], axis = 1)
     
     # Replace NaN by mean of the feature
     data_test = replace_NaN_by_mean_test(data_test, data_train)
