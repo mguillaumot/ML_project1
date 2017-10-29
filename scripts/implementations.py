@@ -45,12 +45,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
             grad,_=compute_stoch_gradient(y_batch,tx_batch,w)
             w=w-gamma*grad
             loss=compute_loss(y,tx,w)
-            # store w and loss
-            # ws.append(w)
-            # losses.append(loss)
             
-        # print("SGD({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-             # bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
     return w, loss
 
 
@@ -87,46 +82,24 @@ def ridge_regression(y, tx, lambda_):
 """ Logistic regression using gradient descent """
 
 
-def logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters, gamma):
     # init parameters
     threshold = 1e-8
     w = initial_w
     y = (y+1)/2
     losses = []
 
-    # start the logistic regression
-    for iter in range(max_iters):
-        # get loss and update w.
-        loss, w = learning_by_gradient_descent(y, tx, w, gamma)
-        losses.append(loss)
+    # start the logistic regression     
+    for n_iter in range(max_iters):
+        for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1):
+            # get loss and update w.
+            loss, w = learning_by_gradient_descent(y_batch, tx_batch, w, gamma)
+            losses.append(loss)
         
         # converge criteria
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
             break
             
-    return w, loss
-
-
-     
-""" Logistic regression using Newton's method """
-
-
-def logistic_regression_newton_method(y, tx, lambda_, initial_w, max_iters, gamma):
-    # init parameters
-    threshold = 1e-8
-    w = initial_w
-    y = (y+1)/2
-    losses = []
-
-    # start the logistic regression
-    for iter in range(max_iter):
-        # get loss and update w.
-        loss, w = learning_by_newton_method(y, tx, w)
-        losses.append(loss)
-            
-        # converge criterion
-        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
-            break
     return w, loss
 
 
@@ -141,10 +114,11 @@ def reg_logistic_regression(y, tx, lambda_ , initial_w, max_iters, gamma):
     y = (y+1)/2
 
     # start the logistic regression
-    for iter in range(max_iters):
-        # get loss and update w.
-        loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
-        losses.append(loss)
+    for n_iter in range(max_iters):
+        for y_batch, tx_batch in batch_iter(y, tx, batch_size=1, num_batches=1):
+            # get loss and update w.
+            loss, w = learning_by_penalized_gradient(y_batch, tx_batch, w, gamma, lambda_)
+            losses.append(loss)
         
         # converge criterion
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:

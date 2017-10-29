@@ -20,7 +20,7 @@ def compute_loss(y,tx,w):
 
 
 
-"""Functions used to compute the loss in logistic regression using gradient descent or Newton's method"""
+"""Functions used to compute the loss in logistic regression using gradient descent"""
 
 
 def calculate_loss(y, tx, w):

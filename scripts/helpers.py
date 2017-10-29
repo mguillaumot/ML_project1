@@ -107,7 +107,7 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             
 
             
-"""Helpers for Logistic Regression using Gradient Descent"""
+"""Helpers for Logistic Regression using Stochastic Gradient Descent"""
 
 
 def sigmoid(t):
@@ -130,34 +130,6 @@ def learning_by_gradient_descent(y, tx, w, gamma):
 
 
 
-"""Helpers for Logistic Regression using Newton's method"""
-
-
-def calculate_hessian(y, tx, w):
-    """return the hessian of the loss function."""
-    pred = sigmoid(tx.dot(w))
-    pred = np.diag(pred.T[0])
-    S = np.multiply(pred,(1-pred))
-    return tx.T.dot(S).dot(tx)
-
-
-def logistic_regression_calculation(y, tx, w):
-    """return the loss, gradient, and hessian."""
-    loss = calculate_loss(y,tx,w)
-    gradient = calculate_gradient(y,tx,w)
-    hessian = calculate_hessian(y,tx,w)
-    return loss, gradient, hessian
-
-
-def learning_by_newton_method(y, tx, w):
-    """ Do one step on Newton's method.
-    return the loss and updated w. """
-    loss, gradient, hessian = logistic_regression_calculation(y,tx,w)
-    w = w - np.linalg.solve(hessian,gradient)
-    return loss, w
-
-
-
 """Helpers for Penalized Logistic Regression"""
 
 
@@ -165,7 +137,6 @@ def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and hessian."""
     loss = calculate_loss(y,tx,w) + lambda_*np.square(np.linalg.norm(w))
     gradient = calculate_gradient(y,tx,w) + 2*lambda_*w
-    hessian = calculate_hessian(y,tx,w)
     return loss, gradient
 
 
@@ -177,11 +148,13 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     return loss, w
 
 
+
 """ Helpers for data preprocessing
         - Divide in 3 datasets
         - Manage invalid values
         - Standardize
 """
+
 
 def put_NaN(data):
     """Replace -999 values by NaN"""
@@ -192,6 +165,7 @@ def put_NaN(data):
                 data[row, ind_feature] = np.nan
     
     return data    
+
 
 def divide_subset(data, y = None):
     """Divides initial dataset into 3 sub-dataset"""
@@ -216,6 +190,7 @@ def divide_subset(data, y = None):
     
     return [[x_no_jet, y_no_jet], [x_one_jet, y_one_jet], [x_more_jet, y_more_jet]]
 
+
 def replace_NaN_by_mean(data):
     """Replace persistent NaN by mean of the feature"""
     # If NaN value, it is replace by the mean of the feature 
@@ -239,6 +214,7 @@ def replace_NaN_by_mean(data):
     
     return data
 
+
 def replace_NaN_by_mean_test(data_test, data_train):
     """Replace persistent NaN by mean of the feature for the test_dataset"""
     # If NaN value, it is replace by the mean of the feature 
@@ -254,6 +230,7 @@ def replace_NaN_by_mean_test(data_test, data_train):
         
     return data_test
 
+
 def normalize_features(data):
     """ Normalization of each feature between -1 and 1"""
     for ind_feature in range (0, data.shape[1]):
@@ -266,6 +243,7 @@ def normalize_features(data):
             data[row, ind_feature] = ft_norm
     
     return data    
+
 
 def preprocess_data_train(data_train, jet = 0):
     # Remove unused columns, full of NaN
@@ -284,6 +262,7 @@ def preprocess_data_train(data_train, jet = 0):
 #     data_train = normalize_features(data_train)
     
     return data_train
+
 
 def preprocess_data_test(data_test, data_train, jet = 0):
     # Remove unused columns, full of NaN
@@ -304,7 +283,9 @@ def preprocess_data_test(data_test, data_train, jet = 0):
     return data_test
 
 
+
 """Helpers cross validation"""
+
 
 def build_k_indices(y, k_fold, seed):
     """build k indices for k-fold."""
