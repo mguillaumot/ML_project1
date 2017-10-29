@@ -257,9 +257,10 @@ def preprocess_data_train(data_train, jet = 0):
 
     # Standardize
     data_train, mean_data, std_data = standardize(data_train, jet = jet)
-        
+    #data_train = build_model(data_tain)
+    
     # Normalize in [-1,1]
-#     data_train = normalize_features(data_train)
+    #data_train = normalize_features(data_train)
     
     return data_train
 
@@ -276,6 +277,7 @@ def preprocess_data_test(data_test, data_train, jet = 0):
     
     # Standardize
     data_test, _, _ = standardize(data_test)
+    #data_test = build_model(data_test)
     
     # Normalize in [-1,1]
 #     data_test = normalize_features(data_test)
