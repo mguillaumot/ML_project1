@@ -4,7 +4,11 @@ from costs import *
 
 
 
-"""Helpers for data pre-processing"""
+""" Helpers for data preprocessing
+        - Divide in 3 datasets
+        - Manage invalid values
+        - Standardize
+"""
 
 
 def standardize(x, jet = 0):
@@ -48,104 +52,8 @@ def build_model_data(x):
         
     # x, mean_x, std_x=standardize(phi)
         
-    return phi    
+    return phi  
 
-
-"""Helpers for Gradient Descent"""
-
-
-def compute_gradient(y, tx, w):
-    """Compute the gradient."""
-    err=y-tx.dot(w)
-    grad=-tx.T.dot(err)/len(err)  
-    return grad,err
-
-
-
-"""Helpers for Stochastic Gradient Descent"""
-
-
-def compute_stoch_gradient(y, tx, w):
-    """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
-    err=y-tx.dot(w)
-    grad=-tx.T.dot(err)/len(err)
-    return grad,err
-
-
-def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
-    """
-    Generate a minibatch iterator for a dataset.
-    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
-    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
-    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
-    Example of use :
-    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
-        <DO-SOMETHING>
-    """
-    data_size = len(y)
-
-    if shuffle:
-        shuffle_indices = np.random.permutation(np.arange(data_size))
-        shuffled_y = y[shuffle_indices]
-        shuffled_tx = tx[shuffle_indices]
-    else:
-        shuffled_y = y
-        shuffled_tx = tx
-    for batch_num in range(num_batches):
-        start_index = batch_num * batch_size
-        end_index = min((batch_num + 1) * batch_size, data_size)
-        if start_index != end_index:
-            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
-            
-
-            
-"""Helpers for Logistic Regression using Stochastic Gradient Descent"""
-
-
-def sigmoid(t):
-    """apply sigmoid function on t."""
-    return np.exp(-np.logaddexp(0, -t))
-
-
-def calculate_gradient(y, tx, w):
-    """compute the gradient of loss."""
-    return np.dot(tx.T, sigmoid(np.dot(tx, w)) - y)
-
-
-def learning_by_gradient_descent(y, tx, w, gamma):
-    """ Do one step of gradient descen using logistic regression.
-    Return the loss and the updated w. """
-    loss = calculate_loss(y,tx,w)
-    grad = calculate_gradient(y,tx,w)
-    w = w - gamma*grad
-    return loss, w
-
-
-
-"""Helpers for Penalized Logistic Regression"""
-
-
-def penalized_logistic_regression(y, tx, w, lambda_):
-    """return the loss, gradient, and hessian."""
-    loss = calculate_loss(y,tx,w) + lambda_*np.square(np.linalg.norm(w))
-    gradient = calculate_gradient(y,tx,w) + 2*lambda_*w
-    return loss, gradient
-
-
-def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
-    """ Do one step of gradient descent, using the penalized logistic regression.
-    Return the loss and updated w. """
-    loss, gradient = penalized_logistic_regression(y,tx,w,lambda_)
-    w = w - gamma*gradient
-    return loss, w
-
-
-
-""" Helpers for data preprocessing
-        - Divide in 3 datasets
-        - Manage invalid values
-        - Standardize
-"""
 
 
 def put_NaN(data):
@@ -275,6 +183,97 @@ def preprocess_datasets(data_train, data_test, y_train):
         datasets_test[ind][0] = subset_test[0]
     
     return datasets_train, datasets_test
+
+
+
+"""Helpers for Gradient Descent"""
+
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    err=y-tx.dot(w)
+    grad=-tx.T.dot(err)/len(err)  
+    return grad,err
+
+
+
+"""Helpers for Stochastic Gradient Descent"""
+
+
+def compute_stoch_gradient(y, tx, w):
+    """Compute a stochastic gradient from just few examples n and their corresponding y_n labels."""
+    err=y-tx.dot(w)
+    grad=-tx.T.dot(err)/len(err)
+    return grad,err
+
+
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    """
+    Generate a minibatch iterator for a dataset.
+    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
+    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
+    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
+    Example of use :
+    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
+        <DO-SOMETHING>
+    """
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+            
+
+            
+"""Helpers for Logistic Regression using Stochastic Gradient Descent"""
+
+
+def sigmoid(t):
+    """apply sigmoid function on t."""
+    return np.exp(-np.logaddexp(0, -t))
+
+
+def calculate_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    return np.dot(tx.T, sigmoid(np.dot(tx, w)) - y)
+
+
+def learning_by_gradient_descent(y, tx, w, gamma):
+    """ Do one step of gradient descen using logistic regression.
+    Return the loss and the updated w. """
+    loss = calculate_loss(y,tx,w)
+    grad = calculate_gradient(y,tx,w)
+    w = w - gamma*grad
+    return loss, w
+
+
+
+"""Helpers for Penalized Logistic Regression"""
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and hessian."""
+    loss = calculate_loss(y,tx,w) + lambda_*np.square(np.linalg.norm(w))
+    gradient = calculate_gradient(y,tx,w) + 2*lambda_*w
+    return loss, gradient
+
+
+def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
+    """ Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w. """
+    loss, gradient = penalized_logistic_regression(y,tx,w,lambda_)
+    w = w - gamma*gradient
+    return loss, w
+
     
 
 """Helpers cross validation"""

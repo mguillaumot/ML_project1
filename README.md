@@ -17,18 +17,23 @@ costs.py: 4 cost functions
 
 helpers.py: Pre-processing functions and helper functions for each regression method to be implemented
 
-- Pre-processing: standardize, de_standardize, sample_data, build_model_data
+- Pre-processing: standardize, de_standardize, sample_data, build_model_data, put_NaN, divide_subset_train, divide_subset_test, normalize_features, replace_by_mean, preprocess_datasets, build_k_indices, compute_accuracy
 - Linear regression using gradient descent: compute_gradient
 - Linear regression using stochastic gradient descent: compute_stoch_gradient, batch_iter
-- Logistic regression using gradient descent: sigmoid, calculate_gradient, learning_by_gradient_descent
-- Logistic regression using newton's method: calculate_hessian, logistic_regression_calculation, learning_by_newton_method
-- Penalized logistic regression: penalized_logistic_regression, learning_by_penalized_gradient
+- Logistic regression using stochastic gradient descent: sigmoid, calculate_gradient, learning_by_gradient_descent
+- Penalized logistic regression using stochastic gradient descent: penalized_logistic_regression, learning_by_penalized_gradient
+- Cross validation: build_k_indices, compute_accuracy
 
 proj1_helpers.py: 3 functions to load and write csv files needed for analysis of the data and scoring submissions
 
 - load_csv_data: load csv files 
 - predict_labels: from computed weights and data outputs the predicted labels
 - create_csv_submission: create a csv file with data predictions
+
+plots.py: 2 functions to visualize cross validation results and bias variance decomposition
+
+- cross_validation_visualization
+- bias_variance_decomposition_visualizaition
 
 implementations.py: 6 functions describing different regression methods for data analysis
 
@@ -41,7 +46,9 @@ implementations.py: 6 functions describing different regression methods for data
 
 project1.ipynb: python notebook used to test our implementations for this project
 
-In the report folder, you will find our report written edited with LaTeX.
+run.py: python script used to generate the csv file submitted on Kaggle for final score
+
+In the report folder, you will find our report in a pdf format edited with LaTeX.
 
 
 
