@@ -223,19 +223,14 @@ def normalize_features(data):
 
 
 def replace_by_mean(x_train, x_test):
-    #replace -999 by the mean
-    mean_col=np.zeros((X.shape[1],1))
+    # Replace -999 by the mean
+    mean_col=np.zeros((x_train.shape[1],1))
 
     for d in range(x_train.shape[1]):
         mean_col[d]=np.mean(x_train[:,d][x_train[:,d] !=-999])
 
         x_train[:,d][x_train[:,d] ==-999]=mean_col[d]
         x_test[:,d][x_test[:,d] ==-999]=mean_col[d]
-
-    # standardize the data
-    centered_data = X - np.mean(X, axis=0)
-
-    std_data = centered_data / np.std(centered_data, axis=0)
 
     return x_train, x_test
 
@@ -246,29 +241,29 @@ def preprocess_datasets(data_train, data_test, y_train):
     datasets_test = divide_subset_test(data_test)
 
     for ind, subset_train in enumerate(datasets_train):
-        subset_test = datasets_test[ind][0]
+        subset_test = datasets_test[ind]
         # Delete useless columns according to number of jet
         if ind == 0:
-            subset_train = np.delete(subset_train, [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
-            subset_test = np.delete(subset_test, [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+            subset_train[0] = np.delete(subset_train[0], [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+            subset_test[0] = np.delete(subset_test[0], [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
         elif ind == 1:
-            subset_train = np.delete(subset_train, [4,5,6,12,22,26,27,28,29], axis = 1)
-            subset_test = np.delete(subset_test, [4,5,6,12,22,26,27,28,29], axis = 1)
+            subset_train[0] = np.delete(subset_train[0], [4,5,6,12,22,26,27,28,29], axis = 1)
+            subset_test[0] = np.delete(subset_test[0], [4,5,6,12,22,26,27,28,29], axis = 1)
         
         # Replace -999 by mean of the corresponding columns
-        subset_train, subset_test = replace_by_mean(subset_train, subset_test)
+        subset_train[0], subset_test[0] = replace_by_mean(subset_train[0], subset_test[0])
         
         # Standardize
-        subset_train, _, _ = standardize(subset_train)
-        subset_test, _, _ = standardize(subset_test)
+        subset_train[0], _, _ = standardize(subset_train[0])
+        subset_test[0], _, _ = standardize(subset_test[0])
         
         # Build model phi a, a^2, a*b, a*c ...
-        subset_train = build_model_data(subset_train)
-        subset_test = build_model_data(subset_test)
+        subset_train[0] = build_model_data(subset_train[0])
+        subset_test[0] = build_model_data(subset_test[0])
         
         # Standardize
-        subset_train, _, _ = standardize(subset_train)
-        subset_test, _, _ = standardize(subset_test)
+        subset_train[0], _, _ = standardize(subset_train[0])
+        subset_test[0], _, _ = standardize(subset_test[0])
     
         # Normalize in [-1,1]
         #subset_train = normalize_features(subset_train)
