@@ -112,22 +112,6 @@ def divide_subset_test(data):
     x_more_jet = data[ind_more_jet]
     
     return [[x_no_jet, ind_no_jet], [x_one_jet, ind_one_jet], [x_more_jet, ind_more_jet]]
-    
-
-
-def normalize_features(data):
-    """ Normalization of each feature between -1 and 1"""
-    for ind_feature in range (0, data.shape[1]):
-        ft_max = np.max( data[:, ind_feature], axis= 0)
-        ft_min = np.min( data[:, ind_feature], axis = 0)
-        
-        for row in range(0, data.shape[0]):
-            ft_crt = data[row, ind_feature] 
-            ft_norm = 2 * ( ft_crt - ft_min) / (ft_max - ft_min) - 1           
-            data[row, ind_feature] = ft_norm
-    
-    return data    
-
 
 
 def replace_by_mean(x_train, x_test):
@@ -168,11 +152,6 @@ def preprocess_datasets(data_train, data_test, y_train):
         # Standardize
         subset_train[0], _, _ = standardize(subset_train[0])
         subset_test[0], _, _ = standardize(subset_test[0])
-    
-        # Normalize in [-1,1]
-        #subset_train[0] = normalize_features(subset_train[0])
-        #subset_test[0] = normalize_features(subset_test[0])
-        print("Features standardized for subset : {}".format(ind))
         
         # Update datasets_train, datasets_test
         datasets_train[ind][0] = subset_train[0]
