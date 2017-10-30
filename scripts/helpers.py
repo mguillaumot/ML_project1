@@ -161,10 +161,6 @@ def preprocess_datasets(data_train, data_test, y_train):
         # Replace -999 by mean of the corresponding columns
         subset_train[0], subset_test[0] = replace_by_mean(subset_train[0], subset_test[0])
         
-        # Standardize
-        subset_train[0], _, _ = standardize(subset_train[0])
-        subset_test[0], _, _ = standardize(subset_test[0])
-        
         # Build model phi a, a^2, a*b, a*c ...
         subset_train[0] = build_model_data(subset_train[0])
         subset_test[0] = build_model_data(subset_test[0])
