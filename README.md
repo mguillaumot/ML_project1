@@ -17,7 +17,7 @@ costs.py: 4 cost functions
 
 helpers.py: Pre-processing functions and helper functions for each regression method to be implemented
 
-- Pre-processing: standardize, de_standardize, sample_data, build_model_data, put_NaN, divide_subset_train, divide_subset_test, normalize_features, replace_by_mean, preprocess_datasets, build_k_indices, compute_accuracy
+- Pre-processing: standardize, de_standardize, sample_data, build_model_data, divide_subset_train, divide_subset_test, replace_by_mean, preprocess_datasets, build_k_indices, compute_accuracy
 - Linear regression using gradient descent: compute_gradient
 - Linear regression using stochastic gradient descent: compute_stoch_gradient, batch_iter
 - Logistic regression using stochastic gradient descent: sigmoid, calculate_gradient, learning_by_gradient_descent
