@@ -169,7 +169,7 @@ def put_NaN(data):
     return data    
 
 
-def divide_subset(data, y = None):
+def divide_subset_train(data, y):
     """Divides initial dataset into 3 sub-dataset"""
     # *** Case no jet ***
     ind_no_jet = np.where(data[:,22] == 0)[0]
@@ -183,14 +183,28 @@ def divide_subset(data, y = None):
     ind_more_jet = np.where(data[:,22] > 1)[0]
     x_more_jet = data[ind_more_jet]
     
-    if y == None:
-        return [[x_no_jet, ind_no_jet], [x_one_jet, ind_one_jet], [x_more_jet, ind_more_jet]]
-    
     y_no_jet = y[ind_no_jet]
     y_one_jet = y[ind_one_jet]
     y_more_jet = y[ind_more_jet]
     
     return [[x_no_jet, y_no_jet], [x_one_jet, y_one_jet], [x_more_jet, y_more_jet]]
+
+def divide_subset_test(data):
+    """Divides initial dataset into 3 sub-dataset"""
+    # *** Case no jet ***
+    ind_no_jet = np.where(data[:,22] == 0)[0]
+    x_no_jet = data[ind_no_jet]
+    
+    # *** Case one jet ***
+    ind_one_jet = np.where(data[:,22] == 1)[0]
+    x_one_jet = data[ind_one_jet]
+    
+    # *** Case two or more jet ***
+    ind_more_jet = np.where(data[:,22] > 1)[0]
+    x_more_jet = data[ind_more_jet]
+    
+    return [[x_no_jet, ind_no_jet], [x_one_jet, ind_one_jet], [x_more_jet, ind_more_jet]]
+    
 
 
 def normalize_features(data):
@@ -206,24 +220,6 @@ def normalize_features(data):
     
     return data    
 
-
-def preprocess_data_train(data_train, jet = 0):
-    # Remove unused columns, full of NaN
-    if jet == 0:
-        data_train = np.delete(data_train,[4,5,6,12,22,23,24,25,26,27,28,29],1)
-    elif  jet == 1:
-        data_train = np.delete(data_train,[4,5,6,12,22,26,27,28,29],1)
-    
-    # Replace NaN by mean of the feature
-    data_train = replace_NaN_by_mean(data_train)
-
-    # Standardize
-    data_train, mean_data, std_data = standardize(data_train, jet = jet)
-    data_train = build_model(data_train)
-    
-    
-    
-    return data_train
 
 
 def replace_by_mean(x_train, x_test):
@@ -244,20 +240,20 @@ def replace_by_mean(x_train, x_test):
     return x_train, x_test
 
 
-def preprocess_datasets(data_train, data_test):
+def preprocess_datasets(data_train, data_test, y_train):
     
-    datasets_train = divide_subset(data_train, y_train)
-    datasets_test = divide_subset(data_test)
+    datasets_train = divide_subset_train(data_train, y_train)
+    datasets_test = divide_subset_test(data_test)
 
     for ind, subset_train in enumerate(datasets_train):
         subset_test = datasets_test[ind][0]
         # Delete useless columns according to number of jet
         if ind == 0:
-            subset_train = np.delete(subset_train,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
-            subset_test = np.delete(subset_test,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+            subset_train = np.delete(subset_train, [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+            subset_test = np.delete(subset_test, [4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
         elif ind == 1:
-            subset_train = np.delete(subset_train,[4,5,6,12,22,26,27,28,29], axis = 1)
-            subset_test = np.delete(subset_test,[4,5,6,12,22,26,27,28,29], axis = 1)
+            subset_train = np.delete(subset_train, [4,5,6,12,22,26,27,28,29], axis = 1)
+            subset_test = np.delete(subset_test, [4,5,6,12,22,26,27,28,29], axis = 1)
         
         # Replace -999 by mean of the corresponding columns
         subset_train, subset_test = replace_by_mean(subset_train, subset_test)

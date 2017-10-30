@@ -17,9 +17,12 @@ def run():
     y, X_train, ids = load_csv_data(DATA_TRAIN_PATH, sub_sample=False)
     _, X_test, ids_test = load_csv_data(DATA_TEST_PATH, sub_sample=False)
 
-    # Preprocess data
-    datasets_train, datasets_test = preprocess_datasets(X_train, X_test)
+    print("Data loaded")
     
+    # Preprocess data
+    datasets_train, datasets_test = preprocess_datasets(X_train, X_test, y_train = y)
+    
+    print("Preprocessing done")
     
     # **** Parameters **** 
     # Set max_iter w_initial and gamma for logistic regression
@@ -32,6 +35,7 @@ def run():
     
     # For each case of jet number
     for ind, subset_train in enumerate(datasets_train):
+        print("Starting subset " + str(ind))
         
         #w_initial=np.zeros((phi.shape[1],1))
         #w, loss = method(y = y_train, tx = poly_train, lambda_ = lambda_)
