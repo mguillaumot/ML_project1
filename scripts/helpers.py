@@ -33,15 +33,7 @@ def sample_data(y, x, seed, size_samples):
     return y[:size_samples], x[:size_samples]
 
 
-def build_model_data(height, weight):
-    """Form (y,tX) to get regression data in matrix form."""
-    y = weight
-    x = height
-    num_samples = len(y)
-    tx = np.c_[np.ones(num_samples), x]
-    return y, tx
-
-def build_model(x):
+def build_model_data(x):
     #x, mean_x, std_x=standardize(x)
     
     n = int((x.shape[1]+2)*(x.shape[1]+1)/2)
@@ -201,46 +193,6 @@ def divide_subset(data, y = None):
     return [[x_no_jet, y_no_jet], [x_one_jet, y_one_jet], [x_more_jet, y_more_jet]]
 
 
-def replace_NaN_by_mean(data):
-    """Replace persistent NaN by mean of the feature"""
-    # If NaN value, it is replace by the mean of the feature 
-    ind_col_nan = np.where(np.isnan(data).any(axis=0))
-
-    # For each column where a NaN appears
-    for col in ind_col_nan[0]:
-        # Get the indices of the row where the NaN appears in the current column
-        ind_row_nan = []
-        for i in range(data[:,col].shape[0]):
-            if np.isnan(data[i,col]) :
-                ind_row_nan.append(i)
-
-        # Compute mean of the column, excluding the nan 
-        x_row_curr = np.delete(data[:,col], ind_row_nan)
-        mean_no_nan = round(np.mean(x_row_curr),3)
-
-        # Replace NaN value of the row by the mean value
-        for i in range(len(ind_row_nan)):
-            data[ind_row_nan[i],col] = mean_no_nan
-    
-    return data
-
-
-def replace_NaN_by_mean_test(data_test, data_train):
-    """Replace persistent NaN by mean of the feature for the test_dataset"""
-    # If NaN value, it is replace by the mean of the feature 
-    ind_col_nan = np.where(np.isnan(data_test).any(axis=0))
-
-    # For each column where a NaN appears
-    for col in ind_col_nan[0]:
-        # Get the indices of the row where the NaN appears in the current column
-        ind_row_nan = []
-        for i in range(data_test[:,col].shape[0]):
-            if np.isnan(data_test[i,col]) :
-                data_test[i,col] = np.mean(data_train[:,col])
-        
-    return data_test
-
-
 def normalize_features(data):
     """ Normalization of each feature between -1 and 1"""
     for ind_feature in range (0, data.shape[1]):
@@ -269,32 +221,69 @@ def preprocess_data_train(data_train, jet = 0):
     data_train, mean_data, std_data = standardize(data_train, jet = jet)
     data_train = build_model(data_train)
     
-    # Normalize in [-1,1]
-    #data_train = normalize_features(data_train)
+    
     
     return data_train
 
 
-def preprocess_data_test(data_test, data_train, jet = 0):
-    # Remove unused columns, full of NaN
-    if jet == 0:
-        data_test = np.delete(data_test,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
-    elif  jet == 1:
-        data_test = np.delete(data_test,[4,5,6,12,22,26,27,28,29], axis = 1)
-    
-    # Replace NaN by mean of the feature
-    data_test = replace_NaN_by_mean_test(data_test, data_train)
-    
-    # Standardize
-    data_test, _, _ = standardize(data_test)
-    data_test = build_model(data_test)
-    
-    # Normalize in [-1,1]
-#     data_test = normalize_features(data_test)
-    
-    return data_test
+def replace_by_mean(x_train, x_test):
+    #replace -999 by the mean
+    mean_col=np.zeros((X.shape[1],1))
+
+    for d in range(x_train.shape[1]):
+        mean_col[d]=np.mean(x_train[:,d][x_train[:,d] !=-999])
+
+        x_train[:,d][x_train[:,d] ==-999]=mean_col[d]
+        x_test[:,d][x_test[:,d] ==-999]=mean_col[d]
+
+    # standardize the data
+    centered_data = X - np.mean(X, axis=0)
+
+    std_data = centered_data / np.std(centered_data, axis=0)
+
+    return x_train, x_test
 
 
+def preprocess_datasets(data_train, data_test):
+    
+    datasets_train = divide_subset(data_train, y_train)
+    datasets_test = divide_subset(data_test)
+
+    for ind, subset_train in enumerate(datasets_train):
+        subset_test = datasets_test[ind][0]
+        # Delete useless columns according to number of jet
+        if ind == 0:
+            subset_train = np.delete(subset_train,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+            subset_test = np.delete(subset_test,[4,5,6,12,22,23,24,25,26,27,28,29], axis = 1)
+        elif ind == 1:
+            subset_train = np.delete(subset_train,[4,5,6,12,22,26,27,28,29], axis = 1)
+            subset_test = np.delete(subset_test,[4,5,6,12,22,26,27,28,29], axis = 1)
+        
+        # Replace -999 by mean of the corresponding columns
+        subset_train, subset_test = replace_by_mean(subset_train, subset_test)
+        
+        # Standardize
+        subset_train, _, _ = standardize(subset_train)
+        subset_test, _, _ = standardize(subset_test)
+        
+        # Build model phi a, a^2, a*b, a*c ...
+        subset_train = build_model_data(subset_train)
+        subset_test = build_model_data(subset_test)
+        
+        # Standardize
+        subset_train, _, _ = standardize(subset_train)
+        subset_test, _, _ = standardize(subset_test)
+    
+        # Normalize in [-1,1]
+        #subset_train = normalize_features(subset_train)
+        #subset_test = normalize_features(subset_test)
+        
+        # Update datasets_train, datasets_test
+        datasets_train[ind][0] = subset_train[0]
+        datasets_test[ind][0] = subset_test[0]
+    
+    return datasets_train, datasets_test
+    
 
 """Helpers cross validation"""
 
