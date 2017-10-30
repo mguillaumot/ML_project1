@@ -266,8 +266,9 @@ def preprocess_datasets(data_train, data_test, y_train):
         subset_test[0], _, _ = standardize(subset_test[0])
     
         # Normalize in [-1,1]
-        #subset_train = normalize_features(subset_train)
-        #subset_test = normalize_features(subset_test)
+        #subset_train[0] = normalize_features(subset_train[0])
+        #subset_test[0] = normalize_features(subset_test[0])
+        print("Features standardized for subset : {}".format(ind))
         
         # Update datasets_train, datasets_test
         datasets_train[ind][0] = subset_train[0]
