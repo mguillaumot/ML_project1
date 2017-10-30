@@ -36,9 +36,8 @@ implementations.py: 6 functions describing different regression methods for data
 - least_squares_SGD: Linear regression using stochastic gradient descent
 - least_squares: Least squares regression using normal equations
 - ridge_regression: Ridge regression using normal equations
-- logistic_regression: Logistic regression using gradient descent
-- logistic_regression_newton_method: Logistic regression using newton's method
-- reg_logistic_regression: Regularized logistic regression
+- logistic_regression: Logistic regression using stochastic gradient descent
+- reg_logistic_regression: Regularized logistic regression using stochastic gradient descent
 
 project1.ipynb: python notebook used to test our implementations for this project
 
