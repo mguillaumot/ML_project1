@@ -5,6 +5,7 @@ In this repository, you can find the implementation of different Machine Learnin
 This work takes place in the context of a project in the Machine Learning course of fall semester 2017 at EPFL. It consists in a Kaggle competition based on the Higgs Boson Machine Learning Challenge (2014).
 
 To complete our analysis, we have been working on a dataset made of two csv files : train.csv and test.csv which both gather information on quantities both raw or computed from the raw quantities.
+Those dataset need to be in a data folder at the root of the project.
 
 In the scripts folder you will find:
 
