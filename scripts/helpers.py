@@ -42,7 +42,7 @@ def build_model_data(height, weight):
     return y, tx
 
 def build_model(x):
-    x, mean_x, std_x=standardize(x)
+    #x, mean_x, std_x=standardize(x)
     
     n = int((x.shape[1]+2)*(x.shape[1]+1)/2)
     phi = np.zeros((x.shape[0],n))
@@ -157,6 +157,16 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
 
 
 def put_NaN(data):
+    #replace -999 by the mean
+    mean_col=np.zeros((data.shape[1],1))
+
+    for d in range(data.shape[1]):
+        mean_col[d]=np.mean(data[:,d][data[:,d] !=-999])
+
+        data[:,d][data[:,d] ==-999]=mean_col[d]
+        
+    return data
+
     """Replace -999 values by NaN"""
     for ind_feature in range (0, data.shape[1]):
         
@@ -257,7 +267,7 @@ def preprocess_data_train(data_train, jet = 0):
 
     # Standardize
     data_train, mean_data, std_data = standardize(data_train, jet = jet)
-    #data_train = build_model(data_tain)
+    data_train = build_model(data_train)
     
     # Normalize in [-1,1]
     #data_train = normalize_features(data_train)
@@ -277,7 +287,7 @@ def preprocess_data_test(data_test, data_train, jet = 0):
     
     # Standardize
     data_test, _, _ = standardize(data_test)
-    #data_test = build_model(data_test)
+    data_test = build_model(data_test)
     
     # Normalize in [-1,1]
 #     data_test = normalize_features(data_test)
