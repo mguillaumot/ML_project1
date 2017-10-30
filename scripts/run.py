@@ -26,21 +26,17 @@ def run():
     
     # **** Parameters **** 
     # Set max_iter w_initial and gamma for logistic regression
-    max_iter=100
-    gamma=0.5
-    lambdas = [0.037275937203149416, 0.0031622776601683794, 0.0071968567300115215]
-    
+    max_iters = 100
+    gamma = 0.6
+    lambdas = [0.0013894954943731374, 2.2758459260747865e-05, 1e-05]
+
     y_pred_final = np.zeros((len(ids_test),1))
     
     # For each case of jet number
     for ind, subset_train in enumerate(datasets_train):
         print("Starting subset " + str(ind))
         
-        #w_initial=np.zeros((phi.shape[1],1))
-        #w, loss = method(y = y_train, tx = poly_train, lambda_ = lambda_)
         w, loss = ridge_regression(y = subset_train[1], tx = subset_train[0], lambda_ = lambdas[ind])
-
-
         """Generate predictions and save ouput in csv format for submission:"""
         
         
